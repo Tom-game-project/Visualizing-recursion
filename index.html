@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        html,
+        body {
+            height: 100%;
+            width: 100%;
+            margin: 0px;
+            padding: 0px;
+        }
+    
+        .mycontainer {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+    
+        #mynetwork {
+            position: absolute;
+            top: 0px;
+            right: 0px;
+            bottom: 0px;
+            left: 0px;
+        }
+    </style>
+    <title>benchmark</title>
+</head>
+<body>
+        <div class=".mycontainer">
+      <div id="mynetwork" />
+    </div>
+
+    <script type="text/javascript">
+      var nodes = Array(31)
+        .fill(null)
+        .map((_, i) => ({ id: i + 1, label: `${i + 1}` }));
+      var edges = [
+        { from: 1, to: 2 },
+        { from: 1, to: 3 },
+        { from: 2, to: 4 },
+        { from: 2, to: 5 },
+        { from: 3, to: 6 },
+        { from: 3, to: 7 },
+        { from: 4, to: 8 },
+        { from: 4, to: 9 },
+        { from: 5, to: 10 },
+        { from: 5, to: 11 },
+        { from: 6, to: 12 },
+        { from: 6, to: 13 },
+        { from: 7, to: 14 },
+        { from: 7, to: 15 },
+        { from: 8, to: 16 },
+        { from: 8, to: 17 },
+        { from: 9, to: 18 },
+        { from: 9, to: 19 },
+        { from: 10, to: 20 },
+        { from: 10, to: 21 },
+        { from: 11, to: 22 },
+        { from: 11, to: 23 },
+        { from: 12, to: 24 },
+        { from: 12, to: 25 },
+        { from: 13, to: 26 },
+        { from: 13, to: 27 },
+        { from: 14, to: 28 },
+        { from: 14, to: 29 },
+        { from: 15, to: 30 },
+        { from: 15, to: 31 },
+      ];
+
+      // create a network
+      var container = document.getElementById("mynetwork");
+      var data = {
+        nodes: new vis.DataSet(nodes),
+        edges: new vis.DataSet(edges),
+      };
+      var options = {
+        layout: {
+          hierarchical: {
+            direction: "UD",
+            sortMethod: "directed",
+          },
+        },
+        edges: {
+          arrows: "to",
+        },physics: {
+              enabled: false,
+        },
+      };
+      network = new vis.Network(container, data, options);
+
+      // periodically change the layout
+      
+    </script>
+</body>
+</html>
