@@ -3,6 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://unpkg.com/viz.js@1.8.1/viz.js" type="javascript/worker"></script>
+    <script src="https://unpkg.com/d3-graphviz@2.1.0/build/d3-graphviz.min.js"></script>
+    <div id="graph" style="text-align: center;"></div>
+
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <style>
@@ -31,70 +38,92 @@
     <title>benchmark</title>
 </head>
 <body>
-        <div class=".mycontainer">
-      <div id="mynetwork" />
+    <div class=".mycontainer">
+      <div id="mynetwork">
     </div>
 
     <script type="text/javascript">
-      var nodes = Array(31)
-        .fill(null)
-        .map((_, i) => ({ id: i + 1, label: `${i + 1}` }));
-      var edges = [
-        { from: 1, to: 2 },
-        { from: 1, to: 3 },
-        { from: 2, to: 4 },
-        { from: 2, to: 5 },
-        { from: 3, to: 6 },
-        { from: 3, to: 7 },
-        { from: 4, to: 8 },
-        { from: 4, to: 9 },
-        { from: 5, to: 10 },
-        { from: 5, to: 11 },
-        { from: 6, to: 12 },
-        { from: 6, to: 13 },
-        { from: 7, to: 14 },
-        { from: 7, to: 15 },
-        { from: 8, to: 16 },
-        { from: 8, to: 17 },
-        { from: 9, to: 18 },
-        { from: 9, to: 19 },
-        { from: 10, to: 20 },
-        { from: 10, to: 21 },
-        { from: 11, to: 22 },
-        { from: 11, to: 23 },
-        { from: 12, to: 24 },
-        { from: 12, to: 25 },
-        { from: 13, to: 26 },
-        { from: 13, to: 27 },
-        { from: 14, to: 28 },
-        { from: 14, to: 29 },
-        { from: 15, to: 30 },
-        { from: 15, to: 31 },
-      ];
+        function draw(tree_map){
 
-      // create a network
-      var container = document.getElementById("mynetwork");
-      var data = {
-        nodes: new vis.DataSet(nodes),
-        edges: new vis.DataSet(edges),
-      };
-      var options = {
-        layout: {
-          hierarchical: {
-            direction: "UD",
-            sortMethod: "directed",
-          },
-        },
-        edges: {
-          arrows: "to",
-        },physics: {
-              enabled: false,
-        },
-      };
-      network = new vis.Network(container, data, options);
+            var nodes = Array(tree_map[tree_map.length - 1].to)
+                .fill(null)
+                .map((_, i) => ({ id: i + 1, label: `${i + 1}` }));
+            var edges = tree_map;
 
-      // periodically change the layout
-      
+            // create a network
+            var container = document.getElementById("mynetwork");
+            var data = {
+                nodes: new vis.DataSet(nodes),
+                edges: new vis.DataSet(edges),
+            };
+            var options = {
+                layout: {
+                    hierarchical: {
+                        direction: "UD",
+                        sortMethod: "hubsize",
+                    },
+                },
+                edges: {
+                    arrows: "to",
+                }, physics: {
+                    enabled: false,
+                }, interaction: {
+                    tooltipDelay: 200,
+                    hideEdgesOnDrag: true,
+                    dragNodes: false,
+                },
+                configure: {
+                    filter: function (option, path) {
+                        if (path.indexOf("hierarchical") !== -1) {
+                            return true;
+                        }
+                        return false;
+                    },
+                    showButton: false,
+                },
+            };
+            
+            network = new vis.Network(container, data, options);
+
+            // periodically change the layout
+
+        }
+        function draw_viz(data) {
+            let string_list = [];
+            for (const i of data) {
+                string_list.push(`${i.from} -> ${i.to}`);
+            }
+            var graphviz = d3.select("#graph").graphviz();
+            graphviz.renderDot(`
+digraph { ${string_list.join("\n")} }
+`);
+                }
+    </script>
+    <script type="module">
+        import init,{sudoku} from "./wasm-sudoku/pkg/wasm_sudoku.js";
+        console.log("開始します")
+        init().then(()=>{
+            let q_2 = [
+                ...[0, 0, 4, 9, 0, 0, 0, 6, 1],
+                ...[2, 0, 6, 0, 0, 0, 0, 0, 0],
+                ...[1, 0, 0, 3, 6, 0, 0, 2, 0],
+                ...[0, 3, 7, 0, 0, 0, 0, 0, 4],
+                ...[0, 0, 0, 1, 0, 0, 6, 0, 0],
+                ...[0, 1, 0, 0, 4, 0, 3, 0, 5],
+                ...[7, 4, 0, 0, 3, 0, 0, 0, 0],
+                ...[0, 0, 0, 0, 1, 5, 0, 0, 9],
+                ...[0, 0, 0, 0, 0, 2, 0, 4, 0],
+            ]
+
+            console.log("数独を解いています")
+            let data = JSON.parse(sudoku(q_2));
+            console.log("数独を解き終わりました");
+            console.log("再帰構造をレンダリングしています")
+
+            draw_viz(data.slice(0,3100));
+            console.log("レンダリングを終了しました")
+        });
+    
     </script>
 </body>
 </html>

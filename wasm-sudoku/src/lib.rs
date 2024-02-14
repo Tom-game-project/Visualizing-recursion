@@ -1,7 +1,9 @@
 extern crate wasm_bindgen;
+use std::collections::{HashMap, hash_map};
+
 use wasm_bindgen::prelude::*;
 
-pub fn possibility(x:i8,y:i8,arr:&Vec<Vec<u8>>)->Vec<u8>{
+fn possibility(x:i8,y:i8,arr:&Vec<Vec<u8>>)->Vec<u8>{
     let cx = (x/3)*3;
     let cy = (y/3)*3;
     //横
@@ -31,7 +33,7 @@ pub fn possibility(x:i8,y:i8,arr:&Vec<Vec<u8>>)->Vec<u8>{
 }
 
 
-pub fn remain_zero(list:Vec<Vec<u8>>)->bool{
+fn remain_zero(list:Vec<Vec<u8>>)->bool{
     for i in list{
         if i.contains(&0){
             return true
@@ -40,7 +42,7 @@ pub fn remain_zero(list:Vec<Vec<u8>>)->bool{
     return false
 }
 
-pub fn find_zero(list:&Vec<Vec<u8>>)->[i8;2]{
+fn find_zero(list:&Vec<Vec<u8>>)->[i8;2]{
     for (y,row) in list.iter().enumerate(){
         for (x,d) in row.iter().enumerate(){
             if d==&0{
@@ -52,7 +54,7 @@ pub fn find_zero(list:&Vec<Vec<u8>>)->[i8;2]{
 }
 
 
-pub fn solver(arr:&Vec<Vec<u8>>)->Option<Vec<Vec<u8>>>{
+fn solver(arr:&Vec<Vec<u8>>)->Option<Vec<Vec<u8>>>{
     //再帰的に数独の問題を解決する
     if remain_zero((&arr).to_vec()){
         let [x,y] = find_zero(&arr);
@@ -71,25 +73,81 @@ pub fn solver(arr:&Vec<Vec<u8>>)->Option<Vec<Vec<u8>>>{
                 //pass
             }
         }
-        return None;
+        return None;//ここに到達するのは、問題に矛盾があるとき
     }else{
         return Some((&arr).to_vec());
     }
 }
 
+struct solverTree{
+    maxhead:usize,
+    tree:Vec<HashMap<String,usize>>
+}
+
+impl solverTree{
+    fn new()->Self{
+        let tree = Vec::new();
+        Self{
+            maxhead:1,
+            tree:tree
+        }
+    }
+    fn solver(&mut self,arr:&Vec<Vec<u8>>,parent:usize)->Option<Vec<Vec<u8>>>{
+        //再帰的に数独の問題を解決する
+        if remain_zero((&arr).to_vec()){
+            let [x,y] = find_zero(&arr);
+            
+            let plist = possibility(x, y, &arr);
+            if plist.len()==0{
+                return None;
+            }
+            for i in plist{
+                let mut new_arr:Vec<Vec<u8>> = arr.clone();
+                let mut tree_data :HashMap<String, usize>= HashMap::new();
+                new_arr[y as usize][x as usize]=i;
+
+                self.maxhead+=1;
+                tree_data.insert("from".to_string(), parent);
+                tree_data.insert("to".to_string(), self.maxhead);
+                self.tree.push(tree_data);
+                let s = self.solver(&new_arr,self.maxhead);
+                if let Some(value) = s{//sに戻り値がある場合
+                    return Some(value);
+                }else{
+                    //pass
+                }
+            }
+            return None;//ここに到達するのは、問題に矛盾があるとき
+        }else{
+            return Some((&arr).to_vec());//問題解決
+        }
+    }
+    fn sudoku(&mut self,arr:Vec<u8>)->Vec<u8>{
+        let mut arglist = Vec::new();
+        for i in 0..9{
+            let row:Vec<u8>=arr[i*9..i*9+9].to_vec();
+            arglist.push(row);
+        }
+        let rlist=self.solver(&arglist,1).unwrap();
+        let mut rarr = Vec::new();
+        for i in rlist{
+            rarr.push(i)
+        }
+        return rarr.concat()
+    }
+    fn get_tree(&self)->Vec<HashMap<String,usize>>{
+        return self.tree.clone();
+    }
+}
+
+
+
 #[wasm_bindgen]
-pub fn sudoku(arr:Vec<u8>)->Vec<u8>{
-    let mut arglist = Vec::new();
-    for i in 0..9{
-        let row:Vec<u8>=arr[i*9..i*9+9].to_vec();
-        arglist.push(row);
-    }
-    let rlist=solver(&arglist).unwrap();
-    let mut rarr = Vec::new();
-    for i in rlist{
-        rarr.push(i)
-    }
-    return rarr.concat()
+pub fn sudoku(arr:Vec<u8>)->JsValue{
+    let mut st = solverTree::new();
+    st.sudoku(arr);
+    let rlist = st.get_tree();
+    return JsValue::from_str(&serde_json::to_string(&rlist).unwrap());
 }
 
 #[cfg(test)]
