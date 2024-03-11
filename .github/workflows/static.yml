@@ -35,9 +35,15 @@ jobs:
       - name: Build Wasm
         run: |
             pwd
-            
+            ls -la
+            cargo install wasm-pack
+            cd wasm-sudoku
+            wasm-pack build --target web
+            cd ..
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2
+        with:
+          path: ./wasm-sudoku/pkg
 
   deploy:
     environment:
