@@ -23,17 +23,28 @@ concurrency:
 
 jobs:
   # Single deploy job since we're just deploying
+  
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Pages
+        id: pages
+        uses: actions/configure-pages@v3
+      - name: Build Wasm
+        run: |
+            pwd
+            
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v2
+
   deploy:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: build wasm file
-        run: |
-          cargo install wasm-pack
-          cd wasm-sudoku
-          wasm-pack build --target web
       - name: Checkout
         uses: actions/checkout@v4
       - name: Setup Pages
