@@ -32,6 +32,8 @@ jobs:
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v3
+      - name: Install wasm-pack
+        run: cargo install wasm-pack
       - name: Wasm Test
         run: npm test
       - name: Build Pages
