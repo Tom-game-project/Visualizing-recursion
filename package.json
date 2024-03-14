@@ -1,0 +1,17 @@
+{
+  "name": "visualizing-recursion",
+  "version": "1.0.0",
+  "description": "visualizing sudoku solver algorithm recursion",
+  "main": "script.js",
+  "scripts": {
+    "build": "rimraf dist pkg && webpack && cp index.html dist/index.html",
+    "test": "cd wasm-sudoku && wasm-pack build --target web && cd .."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "webpack": "^5.90.3",
+    "webpack-cli": "^5.1.4"
+  }
+}
