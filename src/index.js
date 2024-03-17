@@ -198,7 +198,7 @@ settingNumberKeypad(
         [null," ",null]
     ]    
 );
-
+// デフォルトの数独例
 settingDefaultNumber([
         [0, 0, 4, 9, 0, 0, 0, 6, 1],
         [2, 0, 6, 0, 0, 0, 0, 0, 0],
