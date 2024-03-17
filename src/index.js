@@ -1,51 +1,5 @@
 import init,{sudoku} from "../wasm-sudoku/pkg/wasm_sudoku.js";
 
-function draw(tree_map){
- 
-    let nodes = Array(tree_map[tree_map.length - 1].to)
-        .fill(null)
-        .map((_, i) => ({ id: i + 1, label: `${i + 1}` }));
-    let edges = tree_map;
- 
-    // create a network
-    let container = document.getElementById("mynetwork");
-    let data = {
-        nodes: new vis.DataSet(nodes),
-        edges: new vis.DataSet(edges),
-    };
-    let options = {
-        layout: {
-            hierarchical: {
-                direction: "UD",
-                sortMethod: "hubsize",
-            },
-        },
-        edges: {
-            arrows: "to",
-        }, physics: {
-            enabled: false,
-        }, interaction: {
-            tooltipDelay: 200,
-            hideEdgesOnDrag: true,
-            dragNodes: false,
-        },
-        configure: {
-            filter: function (option, path) {
-                if (path.indexOf("hierarchical") !== -1) {
-                    return true;
-                }
-                return false;
-            },
-            showButton: false,
-        },
-    };
-    
-    network = new vis.Network(container, data, options);
- 
-    // periodically change the layout
- 
-}
-
 function draw_viz(data) {
     let string_list = [];
     for (const i of data) {
