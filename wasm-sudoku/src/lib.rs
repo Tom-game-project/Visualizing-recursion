@@ -1,5 +1,5 @@
 extern crate wasm_bindgen;
-use std::collections::{HashMap, hash_map};
+use std::collections::{HashMap};
 
 use wasm_bindgen::prelude::*;
 

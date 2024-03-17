@@ -36,10 +36,8 @@ jobs:
         run: cargo install wasm-pack
       - name: Install npm tools
         run: npm install
-      - name: Wasm Test
-        run: npm test
-      - name: Build Pages
-        run: npm run build
+      - name: Build Page Contents
+        run: npm run build-all
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:

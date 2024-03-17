@@ -4,7 +4,10 @@
   "description": "visualizing sudoku solver algorithm recursion",
   "main": "script.js",
   "scripts": {
-    "build": "rimraf dist pkg && webpack && cp index.html dist/index.html",
+    "clear":"rimraf dist pkg",
+    "build-all":"npm run clear && npm run test && npm run css:sass && npm run build",
+    "css:sass":"sass assets/css/style.scss dist/style.css",
+    "build": "webpack && cp index.html dist/index.html",
     "test": "cd wasm-sudoku && wasm-pack build --target web && cd .."
   },
   "keywords": [],
@@ -13,6 +16,7 @@
   "devDependencies": {
     "webpack": "^5.90.3",
     "webpack-cli": "^5.1.4",
-    "rimraf": "^3.0.0"
+    "rimraf": "^3.0.0",
+    "sass":"^1.72.0"
   }
 }
