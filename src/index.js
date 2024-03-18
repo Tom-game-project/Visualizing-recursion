@@ -20,6 +20,7 @@ digraph { ${string_list.join("\n")} }
 
 const tbody = document.getElementById("input_area");
 const  number_key_pad_tbody = document.getElementById("number_key_pad_tbody");
+const user_conole = document.getElementById("user_console");
 
 console.log(tbody);
 console.log(number_key_pad_tbody);
@@ -141,6 +142,32 @@ function getSudokuArr(width,height){
     return rarr;
 }
 
+
+/**
+ * # user console
+ * ## out
+ * @param {HTMLElement} target 
+ * @param {String} text 
+*/
+function user_console_out(target,text){
+    let text_elem = document.createElement("p");
+    text_elem.textContent = text;
+    target.appendChild(text_elem);
+}
+
+/**
+ * # user console
+ * ##  clear
+ * @param {HTMLElement} target 
+ */
+function user_console_clear(target){
+    while (target.firstChild) {
+        target.removeChild(target.firstChild);
+    }
+}
+
+
+
 // setting
 settingBoxes(tbody,9,9);
 settingNumberKeypad(
@@ -169,14 +196,16 @@ console.log("開始します")
 init().then(()=>{
     let solve_button = document.getElementById("solve_button");
     solve_button.addEventListener("click",function(event){
-        console.log("数独を解いています");
+        user_console_clear(user_conole);
+        user_console_out(user_conole,"solving sudoku...");
         let q_arr = getSudokuArr(9,9);
+        const startTime = performance.now(); // 開始時間
         let data = JSON.parse(sudoku(q_arr));
-        console.log("数独を解き終わりました");
-        console.log("再帰構造をレンダリングしています")
-         
+        const endTime = performance.now(); // 終了時間
+        user_console_out(user_conole,`have solved sudoku ${endTime - startTime}ms`);
+        user_console_out(user_conole,"rendering sudoku recursion structure...");
         draw_viz(data.slice(0,3100));
-        console.log("レンダリングを終了しました")
+        user_console_out(user_conole,"coming soon to show ,please wait for a minutes.");
     })
 });
     
